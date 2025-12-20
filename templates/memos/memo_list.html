@@ -40,4 +40,30 @@
       <div class="card">メモがありません</div>
     {% endfor %}
   </div>
+
+  {% if page_obj.has_other_pages %}
+  <div class="card" style="margin-top: 20px;">
+    <div class="pagination" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if legacy %}&legacy=1{% endif %}{% if unsafe_sort %}&unsafe_sort=1{% endif %}" class="btn">← 前へ</a>
+        {% else %}
+          <span class="btn secondary" style="opacity: 0.5;">← 前へ</span>
+        {% endif %}
+      </div>
+      
+      <div class="muted">
+        ページ {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} （全 {{ page_obj.paginator.count }} 件）
+      </div>
+      
+      <div>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if legacy %}&legacy=1{% endif %}{% if unsafe_sort %}&unsafe_sort=1{% endif %}" class="btn">次へ →</a>
+        {% else %}
+          <span class="btn secondary" style="opacity: 0.5;">次へ →</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
 {% endblock %}
