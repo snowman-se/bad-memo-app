@@ -47,6 +47,10 @@ def memo_list(request: HttpRequest) -> HttpResponse:
             memos = memos.filter(tags__name=tag)
 
     # Pagination: 20 items per page
+    # Convert RawQuerySet to list for pagination compatibility
+    if hasattr(memos, 'raw'):
+        memos = list(memos)
+    
     paginator = Paginator(memos, 20)
     try:
         page_obj = paginator.page(page_number)

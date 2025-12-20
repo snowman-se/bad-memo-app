@@ -46,7 +46,7 @@
     <div class="pagination" style="display: flex; justify-content: space-between; align-items: center;">
       <div>
         {% if page_obj.has_previous %}
-          <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if legacy %}&legacy=1{% endif %}" class="btn">← 前へ</a>
+          <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if legacy %}&legacy=1{% endif %}{% if unsafe_sort %}&unsafe_sort=1{% endif %}" class="btn">← 前へ</a>
         {% else %}
           <span class="btn secondary" style="opacity: 0.5;">← 前へ</span>
         {% endif %}
@@ -58,7 +58,7 @@
       
       <div>
         {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if legacy %}&legacy=1{% endif %}" class="btn">次へ →</a>
+          <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if legacy %}&legacy=1{% endif %}{% if unsafe_sort %}&unsafe_sort=1{% endif %}" class="btn">次へ →</a>
         {% else %}
           <span class="btn secondary" style="opacity: 0.5;">次へ →</span>
         {% endif %}

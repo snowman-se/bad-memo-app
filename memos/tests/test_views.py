@@ -70,6 +70,16 @@ class PaginationTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, f"全 50 件")
 
+    def test_pagination_with_legacy_search(self):
+        """Test that pagination works with legacy search mode (RawQuerySet)"""
+        # Create some memos with 'test' in title/body
+        for i in range(5):
+            Memo.objects.create(title=f"Test Legacy {i}", body=f"Legacy search test {i}")
+        
+        res = self.client.get(reverse("memo_list"), {"q": "Legacy", "legacy": "1", "page": 1})
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(res.context['page_obj'].paginator.count > 0)
+
 
 class SearchSecurityTests(TestCase):
     def setUp(self):
