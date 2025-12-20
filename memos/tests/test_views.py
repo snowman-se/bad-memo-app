@@ -15,6 +15,62 @@ class MemoViewTests(TestCase):
     # TODO: detail/edit/delete / legacy検索 / pagination のテストを追加
 
 
+class PaginationTests(TestCase):
+    def setUp(self):
+        # Create 50 test memos for pagination testing
+        for i in range(50):
+            Memo.objects.create(
+                title=f"Test Memo {i+1}",
+                body=f"This is test memo number {i+1}"
+            )
+
+    def test_pagination_first_page_shows_20_items(self):
+        """Test that first page shows exactly 20 items"""
+        res = self.client.get(reverse("memo_list"))
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(res.context['page_obj']), 20)
+        self.assertEqual(res.context['page_obj'].number, 1)
+
+    def test_pagination_has_next_page(self):
+        """Test that pagination shows next page link when there are more items"""
+        res = self.client.get(reverse("memo_list"))
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(res.context['page_obj'].has_next())
+        self.assertContains(res, '次へ')
+
+    def test_pagination_second_page(self):
+        """Test that second page can be accessed"""
+        res = self.client.get(reverse("memo_list"), {"page": 2})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['page_obj'].number, 2)
+        self.assertTrue(res.context['page_obj'].has_previous())
+
+    def test_pagination_with_search_preserves_query(self):
+        """Test that pagination preserves search query parameters"""
+        res = self.client.get(reverse("memo_list"), {"q": "Test", "page": 1})
+        self.assertEqual(res.status_code, 200)
+        # Check that pagination links contain the search query
+        self.assertContains(res, 'q=Test')
+
+    def test_pagination_invalid_page_defaults_to_first(self):
+        """Test that invalid page number defaults to first page"""
+        res = self.client.get(reverse("memo_list"), {"page": "invalid"})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['page_obj'].number, 1)
+
+    def test_pagination_out_of_range_shows_last_page(self):
+        """Test that page number beyond range shows last page"""
+        res = self.client.get(reverse("memo_list"), {"page": 999})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context['page_obj'].number, res.context['page_obj'].paginator.num_pages)
+
+    def test_pagination_shows_total_count(self):
+        """Test that pagination displays total item count"""
+        res = self.client.get(reverse("memo_list"))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, f"全 50 件")
+
+
 class SearchSecurityTests(TestCase):
     def setUp(self):
         # Create test memos

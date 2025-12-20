@@ -2,6 +2,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Memo
 from .utils import normalize_q, parse_sort, now_jst_string
@@ -18,6 +19,7 @@ def memo_list(request: HttpRequest) -> HttpResponse:
     sort = request.GET.get("sort") or "new"
     legacy = (request.GET.get("legacy") == "1")
     unsafe_sort = (request.GET.get("unsafe_sort") == "1")
+    page_number = request.GET.get("page", 1)
 
     memos = Memo.objects.all()
 
@@ -44,9 +46,18 @@ def memo_list(request: HttpRequest) -> HttpResponse:
         if tag:
             memos = memos.filter(tags__name=tag)
 
+    # Pagination: 20 items per page
+    paginator = Paginator(memos, 20)
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
 
     context = {
-        "memos": memos,
+        "page_obj": page_obj,
+        "memos": page_obj,  # Keep memos for backward compatibility with template
         "q": q,
         "tag": tag,
         "sort": sort,
