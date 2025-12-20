@@ -24,21 +24,23 @@ def memo_list(request: HttpRequest) -> HttpResponse:
     if legacy and q:
         sql = (
             "SELECT * FROM memos_memo "
-            "WHERE title LIKE '%" + q + "%' "
-            "OR body LIKE '%" + q + "%' "
+            "WHERE title LIKE %s "
+            "OR body LIKE %s "
             "ORDER BY created_at DESC"
         )
-        memos = Memo.objects.raw(sql)
+        search_pattern = f"%{q}%"
+        memos = Memo.objects.raw(sql, [search_pattern, search_pattern])
 
     else:
         if q:
             sql = (
                 "SELECT * FROM memos_memo "
-                "WHERE title LIKE '%" + q + "%' "
-                "OR body LIKE '%" + q + "%' "
+                "WHERE title LIKE %s "
+                "OR body LIKE %s "
                 "ORDER BY created_at DESC"
             )
-            memos = Memo.objects.raw(sql)
+            search_pattern = f"%{q}%"
+            memos = Memo.objects.raw(sql, [search_pattern, search_pattern])
         if tag:
             memos = memos.filter(tags__name=tag)
 
