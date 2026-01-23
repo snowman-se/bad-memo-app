@@ -12,6 +12,30 @@ class MemoViewTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, "タイトルは必須")
 
+    def test_memo_detail_returns_404_for_nonexistent_id(self):
+        """Test that accessing non-existent memo returns 404 instead of 500"""
+        res = self.client.get(reverse("memo_detail", kwargs={"memo_id": 99999}))
+        self.assertEqual(res.status_code, 404)
+
+    def test_edit_memo_returns_404_for_nonexistent_id(self):
+        """Test that editing non-existent memo returns 404 instead of 500"""
+        res = self.client.get(reverse("edit_memo", kwargs={"memo_id": 99999}))
+        self.assertEqual(res.status_code, 404)
+
+    def test_memo_detail_works_with_valid_id(self):
+        """Test that memo_detail works correctly with a valid ID"""
+        memo = Memo.objects.create(title="Test Memo", body="Test body")
+        res = self.client.get(reverse("memo_detail", kwargs={"memo_id": memo.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "Test Memo")
+
+    def test_edit_memo_works_with_valid_id(self):
+        """Test that edit_memo works correctly with a valid ID"""
+        memo = Memo.objects.create(title="Test Memo", body="Test body")
+        res = self.client.get(reverse("edit_memo", kwargs={"memo_id": memo.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "Test Memo")
+
     # TODO: detail/edit/delete / legacy検索 / pagination のテストを追加
 
 
