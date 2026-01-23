@@ -1,5 +1,5 @@
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -73,7 +73,7 @@ def memo_list(request: HttpRequest) -> HttpResponse:
 
 
 def memo_detail(request: HttpRequest, memo_id: int) -> HttpResponse:
-    memo = Memo.objects.get(id=memo_id)  # 怪しいところ: 404にならない
+    memo = get_object_or_404(Memo, id=memo_id)
     return render(request, "memos/memo_detail.html", {"memo": memo})
 
 
@@ -100,7 +100,7 @@ def create_memo(request: HttpRequest) -> HttpResponse:
 
 def edit_memo(request: HttpRequest, memo_id: int) -> HttpResponse:
     error = None
-    memo = Memo.objects.get(id=memo_id)  # 怪しいところ: 404にならない
+    memo = get_object_or_404(Memo, id=memo_id)
 
     if request.method == "POST":
         title = (request.POST.get("title") or "").strip()
